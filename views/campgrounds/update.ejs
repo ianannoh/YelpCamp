@@ -1,0 +1,71 @@
+<% layout('layouts/boilerplates') %>
+
+<div class="row">
+    <div class="col-6 offset-3">
+        <h2 class="text-center">Update camp</h2>
+        <form method="post" action="/campgrounds/<%= foundID.id %>?_method=PUT" novalidate class="needs-validation" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label class="form-label" for="title">Title</label>
+            <input class="form-control" type="text" name="title" id="title" value="<%= foundID.title %>" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="loc">Location</label>
+            <input type="text" class="form-control" name="location" id="loc" value="<%= foundID.location %>" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="price">Price</label>
+            <input type="text" class="form-control" name="price" id="price" value="<%= foundID.price %>" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="des">Description</label>
+            <textarea name="description" id="des" cols="10" class="form-control" rows="5" required><%= foundID.description %></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="formFile" class="form-label">Add image</label>
+            <input class="form-control" name="image" type="file" id="formFile" multiple>
+        </div>
+
+        <div class="mb-3">
+            <% foundID.image.forEach((img, i) => { %> 
+                <img src="<%= img.thumbnail %>" class="img-thumbnail" alt="">
+                <div class="form-check">
+                    <input class="form-check-input" name="deleteImages[]" type="checkbox" value="<%= img.filename %>" id="image-<%= i %>">
+                    <label class="form-check-label" for="image-<%= i %>">
+                      Delete
+                    </label>
+                  </div>
+                <% }) %> 
+        </div>
+        
+        <div class="col-6 mb-2">
+            <button class="btn btn-info">Update campground</button>
+        </div>
+        <div>
+            <a class="link-warning" href="/campgrounds/<%= foundID.id %> ">Back to <%= foundID.title %> </a>
+        </div>  
+</div>
+</form>
+</div>
+   
+<script>
+    (() => {
+  'use strict'
+
+  // Fetch all the forms we want to apply custom Bootstrap validation styles to
+  const forms = document.querySelectorAll('.needs-validation')
+
+  // Loop over them and prevent submission
+  Array.from(forms).forEach(form => {
+    form.addEventListener('submit', event => {
+      if (!form.checkValidity()) {
+        event.preventDefault()
+        event.stopPropagation()
+      }
+
+      form.classList.add('was-validated')
+    }, false)
+  })
+})()
+
+</script>

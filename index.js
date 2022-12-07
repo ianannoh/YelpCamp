@@ -87,7 +87,7 @@ app.use('/campgrounds', campgrounds);
 app.use('/campgrounds/:id/reviews', reviews);
 
 app.get('/', (req, res) => {
-    res.send('Welcome to YelpCamp')
+    res.render('home')
 })
 
 app.use('/', userRoutes);

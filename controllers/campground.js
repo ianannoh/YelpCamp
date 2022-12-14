@@ -22,7 +22,6 @@ module.exports.showPage = async (req, res) => {
         res.render('campgrounds/show', { foundID })
     } catch (error) {
         req.flash('error', 'Cannot find camp');
-        console.log(error)
         return res.redirect('/campgrounds')
     }
 };

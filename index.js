@@ -23,7 +23,10 @@ const passport = require('passport');
 const passportLocal = require('passport-local');
 const User = require('./models/user');
 const userRoutes = require('./routes/userroute');
+//const MongoStore = require('connect-mongo')(session);
 const MongoStore = require('connect-mongo');
+const port = process.env.PORT || 3000;
+
 
 main().catch(err => console.log(err));
 async function main() {
@@ -40,7 +43,7 @@ app.engine('ejs', ejsmate)
 
 /*const store = new MongoStore({
     url: 'mongodb://localhost:27017/yelpCamp',
-    secret: 'secret',
+    secret: process.env.SECRET,
     touchAfter: 24 * 3600 // in seconds
 })
 store.on('error', function(e) {
@@ -49,16 +52,29 @@ store.on('error', function(e) {
 
 const sessionOptions = {
     store,
-    secret: 'secret', resave: false, saveUninitialized: true
+    secret: 'secret', 
+    resave: false, 
+    saveUninitialized: true
 };*/
 
+secret = process.env.SECRET || 'secret'
+
+const store = MongoStore.create({
+    mongoUrl: mongo,
+    dbName: "session-db",
+    stringify: false,
+    secret
+  })
+
+  const options = {
+    secret: secret,
+    resave: false, 
+    saveUninitialized: true,
+    store
+  }
 
 
-
-
-
-
-app.use(session({secret: 'secret', resave: false, saveUninitialized: true}));
+app.use(session(options));
 app.use(flash())
 app.use(methodOverride('_method'))
 app.use(express.static(path.join(__dirname, 'public')))
@@ -102,8 +118,6 @@ app.use((err, req, res, next) => {
     if (!err.message) err.message = 'Probelem'
     res.status(statusCode).render('error', { err })
 })
-
-const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
     console.log(`port ${port}`)

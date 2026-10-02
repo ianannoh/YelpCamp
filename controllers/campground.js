@@ -1,5 +1,5 @@
 const Campground = require('../models/campGround');
-const {cloudinary} = require('../cloudinary'); //automatically looks for an index.js file
+const {cloudinary} = require('../cloudinary');
 
 module.exports.allCamps = async (req, res) => {
     const campgrounds = await Campground.find({})

@@ -8,12 +8,9 @@ const sanitize = require('express-mongo-sanitize');
 const mongo = process.env.MONGO_URL || 'mongodb://localhost:27017/yelpCamp' ;
 const express = require('express')
 const app = express()
-const path = require('path')
-const Campground = require('./models/campGround')
+const path = require('path');
 const ejsmate = require('ejs-mate')
-const catchAsync = require('./utilities/catchAsync.js')
-const ExpressError = require('./utilities/expressError.js')
-const {campSchema, reviewSchema} = require('./Schemas')
+const ExpressError = require('./utilities/expressError')
 const campgrounds = require('./routes/campgrounds')
 const mongoose = require('mongoose')
 const reviews = require('./routes/reviews');
@@ -37,7 +34,6 @@ async function main() {
 
 
 const methodOverride = require('method-override')
-
 
 app.engine('ejs', ejsmate)
 
@@ -96,15 +92,13 @@ app.use((req, res, next) => {
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))
 
-
+app.get('/', (req, res) => {
+    res.render('campgrounds/home')
+})
 
 app.use('/campgrounds', campgrounds);
 
 app.use('/campgrounds/:id/reviews', reviews);
-
-app.get('/', (req, res) => {
-    res.render('home')
-})
 
 app.use('/', userRoutes);
 

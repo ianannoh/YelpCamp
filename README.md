@@ -497,28 +497,6 @@ The repo has commits named "ready to deploy" / "deploy" but contains **no Procfi
 3. Run `npm install --omit=dev && npm start` (or point the start command at `index.js`).
 4. Set `PORT` to match your host's injected port.
 
-> 🔴 **Deploy-blocking bug:** `middleware.js:1` imports `./utilities/ExpressError.js` while the file on disk is `utilities/expressError.js`. This resolves on case-insensitive filesystems (Windows/macOS) but throws `MODULE_NOT_FOUND` on Linux. Fix the casing before deploying to Render/Heroku/Docker.
-
----
-
-## Known Issues & Caveats
-
-Bugs and rough edges observed during analysis — useful if you're continuing this project:
-
-1. **Case-sensitive import breaks on Linux.** `middleware.js:1` requires `utilities/ExpressError.js`; the actual file is `utilities/expressError.js`.
-2. **Cascade delete of reviews never fires.** The `Campground` schema registers a `post('findOneAndDelete')` hook, but `controllers/campground.deleteCamp` calls `foundID.deleteOne()` on a *document*, which does not trigger query middleware — so `Review` documents are orphaned in MongoDB.
-3. **Un-awaited save.** `editCamp` calls `campUpdate.save()` without `await` before deleting images and redirecting.
-4. **Duplicated authorization.** `editCamp` re-checks `foundID.author.equals(req.user._id)` even though `isAuthorized` already did.
-5. **No null guards.** `isAuthorized` / `isAuthorizedReview` dereference the fetched document immediately, so a bad or missing id throws a `TypeError` (500) instead of a 404.
-6. **Implicit global.** `index.js:56` is `secret = process.env.SECRET || 'secret'` — missing `const`.
-7. **Inconsistent author comparison in views.** `show.ejs` compares `foundID.author.equals(currentUser)` in one place and `currentUser._id` in another.
-8. **Assumes images exist.** `allcampgrounds.ejs` reads `camp.image[0].url` with no guard — a campground without images crashes the index page.
-9. **`uploads/` is committed** (~268 KB extensionless JPEG) even though nothing reads that directory since Cloudinary was wired in. It is not in `.gitignore`.
-10. **Dead/unused files.** `public/stylesheets/app.css` is empty and unreferenced; `sanitize-html` is installed but never imported; a large commented-out `MongoStore` block remains at `index.js:40–54`.
-11. **Seeding hazards.** `seeds/seedsindex.js` hardcodes the Mongo URL (ignoring `MONGO_URL`), hardcodes a single author ObjectId, and deletes all campgrounds on every run.
-12. **Security gaps.** Logout is a `GET` route; there is no CSRF protection, `helmet`, or rate limiting; `express-mongo-sanitize` is loaded but its options aren't tuned; session `saveUninitialized: true` writes a session row for every visitor.
-13. **No test suite** and `npm test` deliberately fails.
-
 ---
 
 ## License
